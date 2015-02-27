@@ -2,6 +2,7 @@
 # coding: utf
 
 import pygame
+import random
 
 SIZE = 640, 480
 
@@ -10,9 +11,10 @@ def intn(*arg):
 
 def Init(sz):
     '''Turn PyGame on'''
-    global screen
+    global screen, screenrect
     pygame.init()
     screen = pygame.display.set_mode(sz)
+    screenrect = screen.get_rect()
 
 class GameMode:
     '''Basic game mode class'''
@@ -117,10 +119,35 @@ class GameWithObjects(GameMode):
         for obj in self.objects:
             obj.draw(surface)
 
+class GameWithDnD(GameWithObjects):
+
+    def __init__(self, *argp, **argn):
+        GameWithObjects.__init__(self, *argp, **argn)
+        self.oldpos = 0,0
+        self.drag = None
+
+    def Events(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            click = self.locate(event.pos)
+            if click:
+                self.drag = click[0]
+                self.oldpos = event.pos
+        elif event.type == pygame.MOUSEMOTION and event.buttons[0]:
+                if self.drag:
+                    self.drag.pos = event.pos
+                    self.drag.speed = event.rel
+        elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+            self.drag = None
+        GameWithObjects.Events(self, event)
 
 Init(SIZE)
 Game = Universe(50)
-Run = GameWithObjects([Ball("ball.gif",(1,1),(2,2))])
+
+Run = GameWithDnD()
+for i in xrange(5):
+    x, y = random.randrange(screenrect.w), random.randrange(screenrect.h)
+    dx, dy = 1+random.random()*5, 1+random.random()*5
+    Run.objects.append(Ball("ball.gif",(x,y),(dx,dy)))
 
 Game.Start()
 Run.Init()

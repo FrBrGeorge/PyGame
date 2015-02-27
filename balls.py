@@ -51,13 +51,15 @@ class Ball:
         self.speed = speed
         self.pos = pos
         self.newpos = pos
+        self.active = True
 
     def draw(self, surface):
         surface.blit(self.surface, self.rect)
 
     def action(self):
         '''Proceed some action'''
-        self.pos = self.pos[0]+self.speed[0], self.pos[1]+self.speed[1]
+        if self.active:
+            self.pos = self.pos[0]+self.speed[0], self.pos[1]+self.speed[1]
 
     def logic(self, surface):
         x,y = self.pos
@@ -131,12 +133,14 @@ class GameWithDnD(GameWithObjects):
             click = self.locate(event.pos)
             if click:
                 self.drag = click[0]
+                self.drag.active = False
                 self.oldpos = event.pos
         elif event.type == pygame.MOUSEMOTION and event.buttons[0]:
                 if self.drag:
                     self.drag.pos = event.pos
                     self.drag.speed = event.rel
         elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+            self.drag.active = True
             self.drag = None
         GameWithObjects.Events(self, event)
 

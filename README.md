@@ -1,2 +1,2 @@
 # PyGame
-Educatioan Pygame App
+Educational Pygame App

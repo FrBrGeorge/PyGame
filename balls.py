@@ -140,29 +140,37 @@ class GameWithDnD(GameWithObjects):
                     self.drag.pos = event.pos
                     self.drag.speed = event.rel
         elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-            self.drag.active = True
-            self.drag = None
+            if self.drag:
+                self.drag.active = True
+                self.drag = None
         GameWithObjects.Events(self, event)
 
-Init(SIZE)
-Game = Universe(50)
+def __main__():
+    '''Main game code'''
+    global Game
 
-Run = GameWithDnD()
-for i in xrange(5):
-    x, y = random.randrange(screenrect.w), random.randrange(screenrect.h)
-    dx, dy = 1+random.random()*5, 1+random.random()*5
-    Run.objects.append(Ball("ball.gif",(x,y),(dx,dy)))
+    Init(SIZE)
+    Game = Universe(50)
 
-Game.Start()
-Run.Init()
-again = True
-while again:
-    event = pygame.event.wait()
-    if event.type == pygame.QUIT:
-        again = False
-    Run.Events(event)
-    Run.Logic(screen)
-    Run.Draw(screen)
-    pygame.display.flip()
-Game.Finish()
-pygame.quit()
+    Run = GameWithDnD()
+    for i in xrange(5):
+        x, y = random.randrange(screenrect.w), random.randrange(screenrect.h)
+        dx, dy = 1+random.random()*5, 1+random.random()*5
+        Run.objects.append(Ball("ball.gif",(x,y),(dx,dy)))
+
+    Game.Start()
+    Run.Init()
+    again = True
+    while again:
+        event = pygame.event.wait()
+        if event.type == pygame.QUIT:
+            again = False
+        Run.Events(event)
+        Run.Logic(screen)
+        Run.Draw(screen)
+        pygame.display.flip()
+    Game.Finish()
+    pygame.quit()
+
+if __name__ == '__main__':
+    __main__()

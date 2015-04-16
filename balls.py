@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # coding: utf
+'''Dumb jumping balls'''
 
 import pygame
 import random
@@ -7,6 +8,7 @@ import random
 SIZE = 640, 480
 
 def intn(*arg):
+    '''Return list of ints from arg tuple'''
     return tuple(map(int,arg))
 
 def Init(sz):
@@ -17,8 +19,11 @@ def Init(sz):
     screenrect = screen.get_rect()
 
 class GameMode:
-    '''Basic game mode class'''
+    '''Basic game mode'''
     def __init__(self):
+        '''Set game mode up
+
+        - Inittialize black background'''
         self.background = pygame.Color("black")
 
     def Events(self,event):
@@ -26,10 +31,11 @@ class GameMode:
         pass
 
     def Draw(self, screen):
+        '''Draw game field'''
         screen.fill(self.background)
 
     def Logic(self, screen):
-        '''What to calculate'''
+        '''Game logic: what to calculate'''
         pass
 
     def Leave(self):
@@ -54,6 +60,7 @@ class Ball:
         self.active = True
 
     def draw(self, surface):
+        '''Draw ball on the surface'''
         surface.blit(self.surface, self.rect)
 
     def action(self):
@@ -62,6 +69,10 @@ class Ball:
             self.pos = self.pos[0]+self.speed[0], self.pos[1]+self.speed[1]
 
     def logic(self, surface):
+        '''Interact with game surface
+
+        - Check if ball is out of surface, repose it and change acceleration''
+        '''
         x,y = self.pos
         dx, dy = self.speed
         if x < self.rect.width/2:
@@ -84,7 +95,7 @@ class Universe:
     '''Game universe'''
 
     def __init__(self, msec, tickevent = pygame.USEREVENT):
-        '''Run a universe with msec tick'''
+        '''Run an universe with msec tick'''
         self.msec = msec
         self.tickevent = tickevent
 
@@ -97,38 +108,57 @@ class Universe:
         pygame.time.set_timer(self.tickevent, 0)
 
 class GameWithObjects(GameMode):
+    '''Game mode with active objects'''
 
     def __init__(self, objects=[]):
+        '''New game with active objects'''
         GameMode.__init__(self)
         self.objects = objects
 
     def locate(self, pos):
+        '''Find objects under position pos'''
         return [obj for obj in self.objects if obj.rect.collidepoint(pos)]
 
     def Events(self, event):
+        '''Event parser:
+
+        - Prtform object action after every tick'''
         GameMode.Events(self, event)
         if event.type == Game.tickevent:
             for obj in self.objects:
                 obj.action()
 
     def Logic(self, surface):
+        '''Game logic
+
+        - Calculate objects' impact
+        '''
         GameMode.Logic(self, surface)
         for obj in self.objects:
             obj.logic(surface)
 
     def Draw(self, surface):
+        '''Draw game field
+
+        - Draw all the objects on the top of game field
+        '''
         GameMode.Draw(self, surface)
         for obj in self.objects:
             obj.draw(surface)
 
 class GameWithDnD(GameWithObjects):
-
+    '''Game mode with drad-n-droppeble objects'''
     def __init__(self, *argp, **argn):
+        '''- Initialize DnD'''
         GameWithObjects.__init__(self, *argp, **argn)
         self.oldpos = 0,0
         self.drag = None
 
     def Events(self, event):
+        '''Event parser:
+
+        - Support for draggin and dropping objects
+        '''
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             click = self.locate(event.pos)
             if click:

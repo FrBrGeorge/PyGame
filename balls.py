@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 # coding: utf
-'''Dumb jumping balls'''
+"""
+@package balls
+Dumb jumping balls.
+
+Example jumping ball demo.
+"""
 
 import pygame
 import random
@@ -8,11 +13,15 @@ import random
 SIZE = 640, 480
 
 def intn(*arg):
-    '''Return list of ints from arg tuple'''
+    '''Return list of ints from arg tuple
+    @param *arg List of values
+    @returns List of ints
+    '''
     return map(int,arg)
 
 def Init(sz):
-    '''Turn PyGame on'''
+    '''Turn PyGame on
+    @param sz Screen size'''
     global screen, screenrect
     pygame.init()
     screen = pygame.display.set_mode(sz)
@@ -23,7 +32,7 @@ class GameMode:
     def __init__(self):
         '''Set game mode up
 
-        - Inittialize black background'''
+        - Initialize black background'''
         self.background = pygame.Color("black")
 
     def Events(self,event):
@@ -71,7 +80,7 @@ class Ball:
     def logic(self, surface):
         '''Interact with game surface
 
-        - Check if ball is out of surface, repose it and change acceleration''
+        - Check if ball is out of surface, repose it and change acceleration
         '''
         x,y = self.pos
         dx, dy = self.speed
@@ -111,12 +120,15 @@ class GameWithObjects(GameMode):
     '''Game mode with active objects'''
 
     def __init__(self, objects=[]):
-        '''New game with active objects'''
+        '''New game with active objects
+        @param objects List of object derived from Ball calss'''
         GameMode.__init__(self)
         self.objects = objects
 
     def locate(self, pos):
-        '''Find objects under position pos'''
+        '''Find objects under position pos
+        @param pos Coordinates to check
+        @returns List of objects matched'''
         return [obj for obj in self.objects if obj.rect.collidepoint(pos)]
 
     def Events(self, event):
@@ -147,9 +159,11 @@ class GameWithObjects(GameMode):
             obj.draw(surface)
 
 class GameWithDnD(GameWithObjects):
-    '''Game mode with drad-n-droppeble objects'''
+    '''Game mode with drad-n-droppable objects'''
     def __init__(self, *argp, **argn):
-        '''- Initialize DnD'''
+        '''Set game mode up
+
+        - Initialize DnD'''
         GameWithObjects.__init__(self, *argp, **argn)
         self.oldpos = 0,0
         self.drag = None
@@ -157,7 +171,7 @@ class GameWithDnD(GameWithObjects):
     def Events(self, event):
         '''Event parser:
 
-        - Support for draggin and dropping objects
+        - Support for dragging and dropping objects
         '''
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             click = self.locate(event.pos)

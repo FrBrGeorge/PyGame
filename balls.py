@@ -4,12 +4,16 @@
 
 import pygame
 import random
+import sys
+
+if sys.version_info[0]>2:
+    xrange = range
 
 SIZE = 640, 480
 
 def intn(*arg):
     '''Return list of ints from arg tuple'''
-    return map(int,arg)
+    return tuple(map(int,arg))
 
 def Init(sz):
     '''Turn PyGame on'''
